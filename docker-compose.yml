@@ -1,0 +1,50 @@
+version: '3'
+services:
+  paises-api:
+    image: com.paavieira/paises-api
+    depends_on:
+    - postgresql
+    - redis
+    environment:
+    - SPRING_PROFILES_ACTIVE=production
+  ufs-api:
+    image: com.paavieira/ufs-api
+    depends_on:
+    - postgresql
+    environment:
+    - SPRING_PROFILES_ACTIVE=production
+  municipios-api:
+    image: com.paavieira/municipios-api
+    depends_on:
+    - postgresql
+    environment:
+    - SPRING_PROFILES_ACTIVE=production
+  postgresql:
+    image: com.paavieira/postgresql
+    ports:
+    - "15432:5432"
+  elasticsearch:
+    image: com.paavieira/elasticsearch
+  logstash:
+    image: com.paavieira/logstash
+    depends_on:
+    - paises-api
+    - postgresql
+    - elasticsearch
+  redis:
+    image: com.paavieira/redis
+  kong:
+    image: com.paavieira/kong
+    ports:
+    - "8000:8000"
+    - "8443:8443"
+    - "8001:8001"
+    - "8444:8444"
+    depends_on:
+    - kong-database
+  kong-database:
+    image: com.paavieira/kong-database
+  kong-migrations:
+    image: com.paavieira/kong-migrations
+    depends_on:
+    - kong-database
